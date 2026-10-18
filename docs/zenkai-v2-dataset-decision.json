@@ -1,0 +1,296 @@
+{
+  "run": "zenkai-ablation-skip-v2-dataset-1k",
+  "comparisonSha256": "d3db3475043dc1cdb2b876bd54e08f93b18ad58a4fecd3855f8694d9396ba28b",
+  "datasetHypothesis": "INCONCLUSIVE",
+  "advancementAgainstHistoricalV3": "FAIL",
+  "operationState": "PASS",
+  "meaning": "Selection criteria only; all technical measurements preserved",
+  "qualityRelativePercent": {
+    "clean": {
+      "mae": {
+        "vsAnime1k": 0.48166778154505874,
+        "vsHistoricalV3": 15.33785490559174
+      },
+      "mse": {
+        "vsAnime1k": 2.2471426050557186,
+        "vsHistoricalV3": 36.13194687202892
+      },
+      "psnr": {
+        "vsAnime1k": -0.33567627005205436,
+        "vsHistoricalV3": -3.6150020134371186
+      },
+      "ssim": {
+        "vsAnime1k": 0.005266222687816402,
+        "vsHistoricalV3": -0.5582016685538482
+      },
+      "edgeMae": {
+        "vsAnime1k": -0.4529994586915165,
+        "vsHistoricalV3": 13.648982115103037
+      },
+      "laplacianMae": {
+        "vsAnime1k": -0.05945004368379525,
+        "vsHistoricalV3": 12.417291573413692
+      },
+      "hfError": {
+        "vsAnime1k": -0.21284546279199956,
+        "vsHistoricalV3": 16.667528763276973
+      },
+      "dctError": {
+        "vsAnime1k": 0.2219494531944033,
+        "vsHistoricalV3": 5.5502276203644785
+      },
+      "lpipsSqueeze": {
+        "vsAnime1k": -3.5824930578617242,
+        "vsHistoricalV3": -6.099113715114745
+      },
+      "msSsim": {
+        "vsAnime1k": 0.014082469351550664,
+        "vsHistoricalV3": 0.014878470513646214
+      }
+    },
+    "heavy": {
+      "mae": {
+        "vsAnime1k": 0.2407730492210991,
+        "vsHistoricalV3": 7.389984825651852
+      },
+      "mse": {
+        "vsAnime1k": 1.3879563376816284,
+        "vsHistoricalV3": 13.066488939879427
+      },
+      "psnr": {
+        "vsAnime1k": -0.18612995991371672,
+        "vsHistoricalV3": -2.7385604445809064
+      },
+      "ssim": {
+        "vsAnime1k": -0.01237302687544517,
+        "vsHistoricalV3": -0.995602584994637
+      },
+      "edgeMae": {
+        "vsAnime1k": -0.2703583120861941,
+        "vsHistoricalV3": 8.579823462359592
+      },
+      "laplacianMae": {
+        "vsAnime1k": 0.0005827532862934248,
+        "vsHistoricalV3": 7.659559138315397
+      },
+      "hfError": {
+        "vsAnime1k": -0.12909611648699304,
+        "vsHistoricalV3": 9.982897068279929
+      },
+      "dctError": {
+        "vsAnime1k": 0.18146162634000707,
+        "vsHistoricalV3": 5.518602143297202
+      },
+      "lpipsSqueeze": {
+        "vsAnime1k": -0.30215836442083477,
+        "vsHistoricalV3": 18.30834731688935
+      },
+      "msSsim": {
+        "vsAnime1k": -0.00644230797582912,
+        "vsHistoricalV3": -0.23808885479487119
+      }
+    },
+    "codec-intra-h264": {
+      "mae": {
+        "vsAnime1k": -0.18085220034743665,
+        "vsHistoricalV3": 3.6935257925657883
+      },
+      "mse": {
+        "vsAnime1k": 0.30999441626746727,
+        "vsHistoricalV3": 8.234484994399116
+      },
+      "psnr": {
+        "vsAnime1k": -0.03946882202314761,
+        "vsHistoricalV3": -1.2404759395252873
+      },
+      "ssim": {
+        "vsAnime1k": -0.014808879200511882,
+        "vsHistoricalV3": -0.8555581847454641
+      },
+      "edgeMae": {
+        "vsAnime1k": -0.42308257194312304,
+        "vsHistoricalV3": 6.838500458041774
+      },
+      "laplacianMae": {
+        "vsAnime1k": -0.03966664411574339,
+        "vsHistoricalV3": 5.9077818978498176
+      },
+      "hfError": {
+        "vsAnime1k": -0.3603643509973886,
+        "vsHistoricalV3": 7.835034895127357
+      },
+      "dctError": {
+        "vsAnime1k": -0.0672263979764054,
+        "vsHistoricalV3": 3.4937215424940105
+      },
+      "lpipsSqueeze": {
+        "vsAnime1k": -0.24340840487905302,
+        "vsHistoricalV3": 12.447239242160336
+      },
+      "msSsim": {
+        "vsAnime1k": -0.006918118484777747,
+        "vsHistoricalV3": -0.20181625008207638
+      }
+    },
+    "codec-intra-h265": {
+      "mae": {
+        "vsAnime1k": -0.16239002168181305,
+        "vsHistoricalV3": 5.559694404317961
+      },
+      "mse": {
+        "vsAnime1k": 0.46164417360550214,
+        "vsHistoricalV3": 11.55715926496157
+      },
+      "psnr": {
+        "vsAnime1k": -0.0454091731116435,
+        "vsHistoricalV3": -1.5783323482777112
+      },
+      "ssim": {
+        "vsAnime1k": 0.01605536013835618,
+        "vsHistoricalV3": -1.2742541161908094
+      },
+      "edgeMae": {
+        "vsAnime1k": -0.3165392015307411,
+        "vsHistoricalV3": 9.120767489209936
+      },
+      "laplacianMae": {
+        "vsAnime1k": 0.06756848990994158,
+        "vsHistoricalV3": 8.299343173223207
+      },
+      "hfError": {
+        "vsAnime1k": -0.11304283807022086,
+        "vsHistoricalV3": 10.631178443583833
+      },
+      "dctError": {
+        "vsAnime1k": -0.03849935325697107,
+        "vsHistoricalV3": 5.108975440714425
+      },
+      "lpipsSqueeze": {
+        "vsAnime1k": -0.02553856381849462,
+        "vsHistoricalV3": 19.175640638132197
+      },
+      "msSsim": {
+        "vsAnime1k": 0.006900192792880233,
+        "vsHistoricalV3": -0.34651345035827674
+      }
+    },
+    "codec-intra-av1": {
+      "mae": {
+        "vsAnime1k": -0.2857855218420857,
+        "vsHistoricalV3": 7.224196545284212
+      },
+      "mse": {
+        "vsAnime1k": 0.7290822332303604,
+        "vsHistoricalV3": 17.60194378905535
+      },
+      "psnr": {
+        "vsAnime1k": -0.06608754282010354,
+        "vsHistoricalV3": -2.129754192410893
+      },
+      "ssim": {
+        "vsAnime1k": -0.022254039174585127,
+        "vsHistoricalV3": -0.8443961754536766
+      },
+      "edgeMae": {
+        "vsAnime1k": -0.2826487266131217,
+        "vsHistoricalV3": 10.709262374174621
+      },
+      "laplacianMae": {
+        "vsAnime1k": 0.028881329857255444,
+        "vsHistoricalV3": 9.955384248286748
+      },
+      "hfError": {
+        "vsAnime1k": -0.1470674958782392,
+        "vsHistoricalV3": 12.741368749029292
+      },
+      "dctError": {
+        "vsAnime1k": 0.04469531537250049,
+        "vsHistoricalV3": 6.121388362322433
+      },
+      "lpipsSqueeze": {
+        "vsAnime1k": -0.2043338972155584,
+        "vsHistoricalV3": 12.17843328522694
+      },
+      "msSsim": {
+        "vsAnime1k": -0.0016890100476341097,
+        "vsHistoricalV3": -0.13003398509150443
+      }
+    }
+  },
+  "videoRelativePercent": {
+    "clip-60s-360-to-720": {
+      "mae": {
+        "vsAnime1k": -1.3755977358478222,
+        "vsHistoricalV3": 11.162517737300593
+      },
+      "referenceCompensatedTemporalMae": {
+        "vsAnime1k": -0.9499386609949312,
+        "vsHistoricalV3": 21.241717773541446
+      },
+      "allTransitionTemporalMae": {
+        "vsAnime1k": -0.9499386609949312,
+        "vsHistoricalV3": 21.241717773541446
+      }
+    },
+    "clip-600s-360-to-720": {
+      "mae": {
+        "vsAnime1k": -0.89166429684151,
+        "vsHistoricalV3": 3.481646744810596
+      },
+      "referenceCompensatedTemporalMae": {
+        "vsAnime1k": -0.36256362719996327,
+        "vsHistoricalV3": 7.025683223097956
+      },
+      "allTransitionTemporalMae": {
+        "vsAnime1k": -0.3605532239457032,
+        "vsHistoricalV3": 6.9845244448856425
+      }
+    },
+    "clip-1200s-360-to-720": {
+      "mae": {
+        "vsAnime1k": 0.2867310251160049,
+        "vsHistoricalV3": -14.638100537520959
+      },
+      "referenceCompensatedTemporalMae": {
+        "vsAnime1k": -0.5862808279856524,
+        "vsHistoricalV3": -4.586038485164623
+      },
+      "allTransitionTemporalMae": {
+        "vsAnime1k": -0.5862808279856524,
+        "vsHistoricalV3": -4.586038485164623
+      }
+    }
+  },
+  "samplingAnalysis": {
+    "scope": "Baseline actual1k versus V2 actual completed1k; prefix counts confirmed by final training state",
+    "referenceFinalOffset": 8000,
+    "stepsCompared": 1000,
+    "drawsCompared": 8000,
+    "referenceAnimeDraws": 8000,
+    "referenceUniqueImages": 1764,
+    "v2PlannedDomainDraws": {
+      "anime": 5999,
+      "illustration": 2001
+    },
+    "v2PlannedUniqueImages": 2304,
+    "referenceMeanDrawsPerAvailableAnime": 4.464285714285714,
+    "v2PlannedMeanDrawsPerAvailableAnime": 3.34765625,
+    "v2PlannedMeanDrawsPerAvailableIllustration": 3.323920265780731,
+    "animeExposureChangePercent": -25.012500000000003,
+    "interpretation": "Union uniform sampling at equal total updates also dilutes original anime exposure. Results test this allocation, not intrinsic quality of V2 content. Matched-anime-exposure budget would be a separate experiment, never silently applied."
+  },
+  "coherentGainEstablished": false,
+  "longerRunStarted": false,
+  "Stage2Started": false,
+  "releaseApproved": false,
+  "promoted": false,
+  "finalHiddenOpened": false,
+  "limitations": [
+    "Single seed and1k smoke",
+    "Uniform union reduces anime exposure25.0125%; intrinsic illustration quality is not isolated",
+    "Frozen validation anime-only",
+    "Three correlated excerpts of one compressed WebRip",
+    "No blind moving/player evaluation; no temporal H265/AV1 protocol"
+  ],
+  "nextInformativeExperiment": "If this allocation is revisited, independently test domain sampling at fixed total budget with the same frozen union and math; do not combine crop, codec, loss or scheduler switches."
+}

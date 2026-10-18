@@ -1,0 +1,293 @@
+{
+  "run": "zenkai-ablation-skip-v2-domain10-1k",
+  "comparisonSha256": "e9322655712fd27876c8c7b4487169690fe481c2705dd5dec6944472d801e411",
+  "samplerHypothesis": "INCONCLUSIVE",
+  "samplerReason": "All three real-video clips improve against uniform V2, but two gains are small; fixed LPIPS regresses in all five domains and the three inspected still crops show no clear recovery of eyes, hair or finger detail. Mixed perceptual and restoration evidence does not justify a longer run or select10% as final.",
+  "advancementAgainstHistoricalV3": "FAIL",
+  "operationState": "PASS",
+  "meaning": "Selection criterion only;valid training/evaluation/backend operations preserved",
+  "qualityRelativePercent": {
+    "clean": {
+      "mae": {
+        "vsUniform1k": -0.15576141519526576,
+        "vsHistoricalV3": 15.158203030534922
+      },
+      "mse": {
+        "vsUniform1k": 0.018195698717993203,
+        "vsHistoricalV3": 36.156717030940676
+      },
+      "ssim": {
+        "vsUniform1k": -0.008471537468179857,
+        "vsHistoricalV3": -0.5666259177585231
+      },
+      "edgeMae": {
+        "vsUniform1k": -0.0718031677376052,
+        "vsHistoricalV3": 13.567378545842846
+      },
+      "laplacianMae": {
+        "vsUniform1k": -0.06732042859852738,
+        "vsHistoricalV3": 12.341611770907601
+      },
+      "hfError": {
+        "vsUniform1k": 0.009751988820227986,
+        "vsHistoricalV3": 16.678906167638807
+      },
+      "dctError": {
+        "vsUniform1k": 0.16187438010963895,
+        "vsHistoricalV3": 5.7210863970292625
+      },
+      "lpipsSqueeze": {
+        "vsUniform1k": 2.524089200769164,
+        "vsHistoricalV3": -3.728971584971419
+      },
+      "msSsim": {
+        "vsUniform1k": -0.003320664883399438,
+        "vsHistoricalV3": 0.011557311566101625
+      }
+    },
+    "heavy": {
+      "mae": {
+        "vsUniform1k": 0.033918824742040776,
+        "vsHistoricalV3": 7.426410246395365
+      },
+      "mse": {
+        "vsUniform1k": 0.23322229466757882,
+        "vsHistoricalV3": 13.330185199885069
+      },
+      "ssim": {
+        "vsUniform1k": -0.014773015118496602,
+        "vsHistoricalV3": -1.0102285195927374
+      },
+      "edgeMae": {
+        "vsUniform1k": -0.16881017303652657,
+        "vsHistoricalV3": 8.396529674490028
+      },
+      "laplacianMae": {
+        "vsUniform1k": -0.20356107251230382,
+        "vsHistoricalV3": 7.4404061850714465
+      },
+      "hfError": {
+        "vsUniform1k": -0.12908858737733508,
+        "vsHistoricalV3": 9.840921700097827
+      },
+      "dctError": {
+        "vsUniform1k": -0.025626303543013762,
+        "vsHistoricalV3": 5.491561626017605
+      },
+      "lpipsSqueeze": {
+        "vsUniform1k": 0.5886034327445611,
+        "vsHistoricalV3": 19.004714310419924
+      },
+      "msSsim": {
+        "vsUniform1k": -0.002894284894539023,
+        "vsHistoricalV3": -0.24097624871964873
+      }
+    },
+    "codec-intra-h264": {
+      "mae": {
+        "vsUniform1k": -0.15631201943857587,
+        "vsHistoricalV3": 3.531440348372361
+      },
+      "mse": {
+        "vsUniform1k": -0.4068929478816319,
+        "vsHistoricalV3": 7.794086507780906
+      },
+      "ssim": {
+        "vsUniform1k": 0.009048524452737183,
+        "vsHistoricalV3": -0.8465870756842908
+      },
+      "edgeMae": {
+        "vsUniform1k": -0.4363231796190026,
+        "vsHistoricalV3": 6.37233931578598
+      },
+      "laplacianMae": {
+        "vsUniform1k": -0.4611849920218569,
+        "vsHistoricalV3": 5.419351102353698
+      },
+      "hfError": {
+        "vsUniform1k": -0.3883545785238307,
+        "vsHistoricalV3": 7.416252599859363
+      },
+      "dctError": {
+        "vsUniform1k": -0.3004854294187953,
+        "vsHistoricalV3": 3.1827379888955676
+      },
+      "lpipsSqueeze": {
+        "vsUniform1k": 0.2653289579052309,
+        "vsHistoricalV3": 12.745594330234766
+      },
+      "msSsim": {
+        "vsUniform1k": 0.004134334216221447,
+        "vsHistoricalV3": -0.19769025962413922
+      }
+    },
+    "codec-intra-h265": {
+      "mae": {
+        "vsUniform1k": -0.14839409086931932,
+        "vsHistoricalV3": 5.403050055482228
+      },
+      "mse": {
+        "vsUniform1k": -0.17127538396987108,
+        "vsHistoricalV3": 11.366089312084625
+      },
+      "ssim": {
+        "vsUniform1k": 0.04113610889071584,
+        "vsHistoricalV3": -1.2336421858608726
+      },
+      "edgeMae": {
+        "vsUniform1k": -0.3791687860523085,
+        "vsHistoricalV3": 8.707015599790147
+      },
+      "laplacianMae": {
+        "vsUniform1k": -0.3638897650438455,
+        "vsHistoricalV3": 7.9052529478061295
+      },
+      "hfError": {
+        "vsUniform1k": -0.33250834036735455,
+        "vsHistoricalV3": 10.26332054821224
+      },
+      "dctError": {
+        "vsUniform1k": -0.2378356167714757,
+        "vsHistoricalV3": 4.858988860692803
+      },
+      "lpipsSqueeze": {
+        "vsUniform1k": 0.1685756489395729,
+        "vsHistoricalV3": 19.376541747715837
+      },
+      "msSsim": {
+        "vsUniform1k": 0.017950421349310908,
+        "vsHistoricalV3": -0.3286252296333392
+      }
+    },
+    "codec-intra-av1": {
+      "mae": {
+        "vsUniform1k": -0.082849998305079,
+        "vsHistoricalV3": 7.135361300263798
+      },
+      "mse": {
+        "vsUniform1k": -0.27962825934800817,
+        "vsHistoricalV3": 17.273095520678595
+      },
+      "ssim": {
+        "vsUniform1k": 0.002330380007098398,
+        "vsHistoricalV3": -0.8420854730862404
+      },
+      "edgeMae": {
+        "vsUniform1k": -0.28775045938650434,
+        "vsHistoricalV3": 10.390695963109508
+      },
+      "laplacianMae": {
+        "vsUniform1k": -0.2510578128436691,
+        "vsHistoricalV3": 9.679332665489149
+      },
+      "hfError": {
+        "vsUniform1k": -0.19205448656532953,
+        "vsHistoricalV3": 12.52484389213162
+      },
+      "dctError": {
+        "vsUniform1k": -0.18180285653353057,
+        "vsHistoricalV3": 5.928456646886704
+      },
+      "lpipsSqueeze": {
+        "vsUniform1k": 0.6364878745248381,
+        "vsHistoricalV3": 12.892435410919356
+      },
+      "msSsim": {
+        "vsUniform1k": 0.0019077215939855563,
+        "vsHistoricalV3": -0.12812874418393072
+      }
+    }
+  },
+  "videoRelativePercent": {
+    "clip-60s-360-to-720": {
+      "mae": {
+        "vsUniform1k": -0.31125964865656996,
+        "vsHistoricalV3": 10.816513675153683
+      },
+      "referenceCompensatedTemporalMae": {
+        "vsUniform1k": -0.3269790742816081,
+        "vsHistoricalV3": 20.84528272712238
+      },
+      "allTransitionTemporalMae": {
+        "vsUniform1k": -0.3269790742816081,
+        "vsHistoricalV3": 20.84528272712238
+      }
+    },
+    "clip-600s-360-to-720": {
+      "mae": {
+        "vsUniform1k": -0.2518604120585466,
+        "vsHistoricalV3": 3.2210174429141425
+      },
+      "referenceCompensatedTemporalMae": {
+        "vsUniform1k": -0.2380449168816745,
+        "vsHistoricalV3": 6.77091402442751
+      },
+      "allTransitionTemporalMae": {
+        "vsUniform1k": -0.23706896955489887,
+        "vsHistoricalV3": 6.730897335200936
+      }
+    },
+    "clip-1200s-360-to-720": {
+      "mae": {
+        "vsUniform1k": -4.045644862230768,
+        "vsHistoricalV3": -18.09153983742734
+      },
+      "referenceCompensatedTemporalMae": {
+        "vsUniform1k": -1.4211048157220074,
+        "vsHistoricalV3": -5.941970887123094
+      },
+      "allTransitionTemporalMae": {
+        "vsUniform1k": -1.4211048157220074,
+        "vsHistoricalV3": -5.941970887123094
+      }
+    }
+  },
+  "samplingAnalysis": {
+    "actualDomainDraws": {
+      "anime": 7228,
+      "illustration": 772
+    },
+    "referenceDomainDraws": {
+      "anime": 5999,
+      "illustration": 2001
+    },
+    "animeExposureChangePercent": 20.486747791298555,
+    "targetIllustrationProbability": 0.1,
+    "actualIllustrationFraction": 0.0965
+  },
+  "longerRunStarted": false,
+  "Stage2Started": false,
+  "releaseApproved": false,
+  "promoted": false,
+  "finalHiddenOpened": false,
+  "limitations": [
+    "1k smoke/single seed",
+    "Same uniform-union dataset;sampler distribution and associated crop exposure changed intentionally",
+    "Frozen validation anime-only",
+    "Three correlated excerpts of one compressed episode",
+    "No blind moving/player certification",
+    "HistoricalV3 training budget differs;product gate is not pure architectural attribution"
+  ],
+  "qualityPsnrDeltaDb": {
+    "clean": {
+      "vsUniform1k": 0.0063550472259521484,
+      "vsHistoricalV3": -1.3943191766738892
+    },
+    "heavy": {
+      "vsUniform1k": -0.017474353313446045,
+      "vsHistoricalV3": -0.9335218667984009
+    },
+    "codec-intra-h264": {
+      "vsUniform1k": 0.01697981357574463,
+      "vsHistoricalV3": -0.36916327476501465
+    },
+    "codec-intra-h265": {
+      "vsUniform1k": 0.008747220039367676,
+      "vsHistoricalV3": -0.48908376693725586
+    },
+    "codec-intra-av1": {
+      "vsUniform1k": 0.009267985820770264,
+      "vsHistoricalV3": -0.7146732211112976
+    }
+  }
+}

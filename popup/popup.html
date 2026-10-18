@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AnimeScaler</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="panel">
+    <header>
+      <div class="brand">
+        <img class="logo" src="../assets/logo.png" alt="Logo AnimeScaler" width="38" height="38" />
+        <div>
+          <div class="eyebrow">IA 2× · GPU</div>
+          <h1>AnimeScaler</h1>
+        </div>
+      </div>
+      <span id="dot" class="dot" aria-hidden="true"></span>
+    </header>
+
+    <section class="card status-card">
+      <div class="status-header">
+        <span class="status-title">Status do vídeo</span>
+        <strong id="status" class="status-badge" aria-live="polite">Parado</strong>
+      </div>
+      <div id="metrics" class="metrics" aria-live="polite">Abra um vídeo HTML5 e ative o upscaler.</div>
+      <button id="toggle" class="primary" aria-pressed="false" aria-busy="false" aria-describedby="activationReason">Ativar AnimeScaler</button>
+      <p id="activationReason" class="hint" role="status" aria-live="polite" hidden></p>
+    </section>
+
+    <section class="quick-profiles" aria-label="Perfis rápidos de qualidade">
+      <span class="section-label">Perfil de qualidade</span>
+      <div class="profile-buttons" role="group" aria-label="Perfil de qualidade">
+        <button type="button" class="profile-btn" data-preset="performance" aria-pressed="false">
+          <span class="profile-title">Mais fluido</span>
+          <span class="profile-sub">320 px</span>
+        </button>
+        <button type="button" class="profile-btn" data-preset="balanced" aria-pressed="false">
+          <span class="profile-title">Equilibrado</span>
+          <span class="profile-sub">960 px</span>
+        </button>
+        <button type="button" class="profile-btn" data-preset="quality" aria-pressed="false">
+          <span class="profile-title">Mais detalhe</span>
+          <span class="profile-sub">1280 px</span>
+        </button>
+      </div>
+    </section>
+
+    <details class="advanced-section">
+      <summary class="advanced-summary">
+        <span>Configurações avançadas</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </summary>
+      <div class="advanced-content">
+        <label class="field">
+          <span>Processamento (aplicado ao iniciar)</span>
+          <select id="backend" aria-describedby="modelNote">
+            <option value="webgpu">WebGPU · navegador</option>
+            <option value="rocm">ROCm local · AMD FP16</option>
+            <option value="tensorrt">TensorRT local · NVIDIA</option>
+            <option value="opencl">Anime4KCPP local · OpenCL</option>
+            <option value="d3d12">FSR 3 local · DirectX 12</option>
+          </select>
+          <small>ROCm, TensorRT, OpenCL e FSR 3 abrem em janela separada para reduzir a latência do player. Inicie o serviço local correspondente antes de ativar.</small>
+        </label>
+
+        <label class="field">
+          <span>Modelo</span>
+          <select id="model" aria-describedby="modelNote">
+            <option value="animejanai">AnimeJaNai SuperUltraCompact · leve</option>
+            <option value="fsr1-spatial">AMD FSR 1 Spatial · WebGPU · streams rápidos</option>
+            <option value="asr-anime-spatial">ASR Anime Spatial · WebGPU · linhas e denoise leve</option>
+            <option value="asr-anime-temporal">ASR Anime Temporal · WebGPU · experimental</option>
+            <option value="fsr3-native">AMD FSR 3.1 · DirectX 12 · experimental</option>
+            <option value="adore">Adore · pesado</option>
+            <option value="hfa2k-cugan">HFA2K Real-CUGAN · 2× (local)</option>
+            <option value="realesr-anime">RealESR AnimeVideo v3 · 4× (local)</option>
+            <option value="anime4k-s">Anime4K S · ROCm experimental</option>
+            <option value="anime4k-m">Anime4K M · ROCm experimental</option>
+            <option value="realesr-anime4k-s-360">RealESR 360p + Anime4K S · ROCm experimental</option>
+            <option value="span-mssim">SPAN MS-SSIM · 4× (local)</option>
+            <option value="anime4kcpp-acnet-f8b8-hdn">Anime4KCPP ACNet f8b8 · OpenCL 2× (experimental)</option>
+            <option value="anime4kcpp-acnet-f8b4">Anime4KCPP ACNet f8b4 · OpenCL 2× (fast)</option>
+            <option value="anime4kcpp-arnet-f8b8">Anime4KCPP ARNet f8b8 · OpenCL 2× (experimental)</option>
+            <option value="anime4kcpp-artcnn-c4f16">Anime4KCPP ArtCNN C4F16 · OpenCL 2× (experimental)</option>
+            <option value="adore-lite">Adore Lite v2 · leve (local)</option>
+            <option value="adore-lite-v3">Lite V3 · HFA2K · FP16 (experimental)</option>
+            <option value="zenkai-1-0">Zenkai 1.0 · 2× FP16 (experimental, local)</option>
+            <option value="zenkai-realesr-clean5k">Zenkai Real Clean 5k · 2× FP16 (experimental, local)</option>
+            <option value="zenkai-animevideo-30k">Zenkai AnimeVideo 30k · 2× FP16 (experimental, local)</option>
+          </select>
+          <small id="modelNote" role="status" aria-live="polite"></small>
+        </label>
+
+        <label class="field" id="spatialDenoiseField" hidden>
+          <span>Redução de ruído · FSR / ASR</span>
+          <select id="spatialDenoise">
+            <option value="off">Desligada · preservar a origem</option>
+            <option value="balanced" selected>Equilibrada · proteger detalhes</option>
+            <option value="strong">Forte · vídeos e streams ruidosos</option>
+          </select>
+          <small>Forte limpa mais, mas pode suavizar texturas finas. Não elimina todos os artefatos.</small>
+        </label>
+
+        <label class="field" id="fsrQualityField" hidden>
+          <span>Preset FSR / ASR</span>
+          <select id="fsrQuality">
+            <option value="performance">Performance · 50% da saída</option>
+            <option value="balanced">Balanced · 59% da saída</option>
+            <option value="quality">Quality · 67% da saída</option>
+            <option value="ultra-quality">Ultra Quality · 77% da saída</option>
+            <option value="native-aa" selected>Nativo / AA espacial · sem redução extra</option>
+          </select>
+          <small>Limitado à resolução da origem: presets podem coincidir em vídeos de baixa resolução. Nativo preserva a origem; não é AA temporal do FSR 2/4.</small>
+        </label>
+
+        <label class="field">
+          <span>Limite de FPS do processamento</span>
+          <select id="maxFps">
+            <option value="12">12 FPS · menor carga</option>
+            <option value="24" selected>24 FPS</option>
+            <option value="30">30 FPS</option>
+            <option value="60">60 FPS · maior carga</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Resolução / preset de saída</span>
+          <select id="preset">
+            <option value="720p">360p → 720p</option>
+            <option value="1080p">720p → 1080p</option>
+            <option value="1080p-fast">720p → 1080p · rápido</option>
+            <option value="1440p">720p / 1080p → 2K · 1440p</option>
+            <option value="4k">720p / 1080p → 4K · 2160p · maior carga</option>
+            <option value="performance" selected>Performance · 320 px de largura</option>
+            <option value="balanced">Balanced · 960 px de largura</option>
+            <option value="quality">Quality · 1280 px de largura</option>
+            <option value="native">Native · até 1920 px de largura</option>
+          </select>
+        </label>
+
+        <div class="toggles-list">
+          <label class="toggle-row">
+            <span><strong>Adaptive</strong><small>Reduz a carga se perder o tempo do frame.</small></span>
+            <input id="adaptive" type="checkbox" checked />
+          </label>
+
+          <label class="toggle-row">
+            <span><strong>HUD</strong><small>Mostra resolução, ms e FPS no vídeo.</small></span>
+            <input id="showHud" type="checkbox" checked />
+          </label>
+
+          <label class="toggle-row">
+            <span><strong>Vídeo fluido · experimental</strong><small>ROCm: acompanha movimentos e reaproveita detalhes da IA onde há confiança. Não gera quadros novos.</small></span>
+            <input id="fluidVideo" type="checkbox" />
+          </label>
+        </div>
+
+        <section class="card diag-card">
+          <div class="diag-header">Diagnóstico local</div>
+          <p class="hint">Registra desempenho e erros durante o uso. Sem imagens ou endereços dos vídeos.</p>
+          <div class="diag-buttons">
+            <button id="exportDiagnostics" type="button" class="sec-btn">Exportar diagnóstico</button>
+            <button id="clearDiagnostics" type="button" class="sec-btn">Limpar histórico</button>
+          </div>
+          <p id="diagnosticStatus" class="hint" role="status"></p>
+        </section>
+
+        <p class="hint">Para tela cheia, use os controles do player original.</p>
+        <p class="hint drm-hint">Vídeos cross-origin/DRM podem ser bloqueados pelas regras de segurança do navegador.</p>
+      </div>
+    </details>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

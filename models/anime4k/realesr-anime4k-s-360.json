@@ -1,0 +1,20 @@
+{
+  "id": "realesr-anime4k-s-360",
+  "port": "AnimeScaler PyTorch shader-equation port v1",
+  "variant": "S",
+  "experimental": true,
+  "realESRInputCap": [
+    640,
+    360
+  ],
+  "artifacts": [
+    {
+      "path": "models/anime4k/Anime4K_Upscale_CNN_x2_S.glsl",
+      "sha256": "4c53ec2e287908f7ee7bcb266b0170421626d663576468b7d7dafc62962649a4"
+    },
+    {
+      "path": "models/realesr-animevideov3.pth",
+      "sha256": "b8a8376811077954d82ca3fcf476f1ac3da3e8a68a4f4d71363008000a18b75d"
+    }
+  ]
+}

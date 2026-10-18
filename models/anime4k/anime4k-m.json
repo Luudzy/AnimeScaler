@@ -1,0 +1,13 @@
+{
+  "id": "anime4k-m",
+  "port": "AnimeScaler PyTorch shader-equation port v1",
+  "variant": "M",
+  "experimental": true,
+  "realESRInputCap": null,
+  "artifacts": [
+    {
+      "path": "models/anime4k/Anime4K_Upscale_CNN_x2_M.glsl",
+      "sha256": "716e02098a68f0d648761f2b96b4dd139e1cb09b174bb369fca3aa34328fff7e"
+    }
+  ]
+}

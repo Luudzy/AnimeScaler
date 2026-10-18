@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>AnimeScaler WebGPU regression</title>
+<button id="run">Test selected model</button>
+<pre id="result">Ready</pre>
+<script type="module">
+import * as ort from '../vendor/ort.webgpu.bundle.min.mjs';
+import { getModelCandidates } from '../src/engine/model-config.js';
+ort.env.wasm.numThreads = 1;
+ort.env.wasm.wasmPaths = new URL('../vendor/', location.href).href;
+document.querySelector('#run').onclick = async () => {
+  const result = document.querySelector('#result');
+  result.textContent = 'Running';
+  let session;
+  try {
+    const candidate = getModelCandidates(path => '../' + path, 'animejanai')[0];
+    session = await ort.InferenceSession.create(candidate.url, {
+      executionProviders: ['webgpu'], graphOptimizationLevel: 'all',
+    });
+    const device = ort.env.webgpu.device;
+    for (const [height, width] of [[12, 20], [16, 24], [12, 20]]) {
+      const buffers = [height * width * 3 * 4, height * width * 12 * 4].map(size =>
+        device.createBuffer({size, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST}));
+      try {
+        const input = ort.Tensor.fromGpuBuffer(buffers[0], {dataType: 'float32', dims: [1, 3, height, width]});
+        const output = ort.Tensor.fromGpuBuffer(buffers[1], {dataType: 'float32', dims: [1, 3, height * 2, width * 2]});
+        await session.run({[session.inputNames[0]]: input}, {[session.outputNames[0]]: output});
+        await device.queue.onSubmittedWorkDone();
+      } finally { buffers.forEach(buffer => buffer.destroy()); }
+    }
+    result.textContent = 'PASS: WebGPU preallocated output, 20x12 → 24x16 → 20x12';
+  } catch (error) { result.textContent = 'FAIL: ' + error.message; }
+  finally { await session?.release(); }
+};
+</script>

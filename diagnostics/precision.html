@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>AnimeScaler precision benchmark</title>
+<button id="run">Compare FP16 and FP32</button>
+<pre id="result">Synthetic RGB, 320x180, 2 warmups + 5 timed frames. Includes GPU completion.</pre>
+<script type="module">
+import * as ort from '../vendor/ort.webgpu.bundle.min.mjs';
+import { getModelCandidates } from '../src/engine/model-config.js';
+ort.env.wasm.numThreads = 1;
+ort.env.wasm.wasmPaths = new URL('../vendor/', location.href).href;
+document.querySelector('#run').onclick = async () => {
+  const log = document.querySelector('#result');
+  log.textContent = 'Running…';
+  const results = [], outputs = [];
+  try {
+    for (const model of getModelCandidates(path => '../' + path, 'animejanai')) {
+      const session = await ort.InferenceSession.create(model.url, {executionProviders:['webgpu'], graphOptimizationLevel:'all'});
+      const device = ort.env.webgpu.device;
+      const count = 3 * 320 * 180;
+      const input = Float32Array.from({length: count}, (_, i) => (Math.sin(i * .01) + 1) * .5);
+      const buffers = [count * 4, count * 16].map(size => device.createBuffer({size, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST}));
+      const staging = device.createBuffer({size: count * 16, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ});
+      try {
+        device.queue.writeBuffer(buffers[0], 0, input);
+        const feeds = {[session.inputNames[0]]: ort.Tensor.fromGpuBuffer(buffers[0], {dataType:'float32', dims:[1,3,180,320]})};
+        const fetches = {[session.outputNames[0]]: ort.Tensor.fromGpuBuffer(buffers[1], {dataType:'float32', dims:[1,3,360,640]})};
+        const times = [];
+        for (let i = 0; i < 7; i++) {
+          const start = performance.now();
+          await session.run(feeds, fetches);
+          await device.queue.onSubmittedWorkDone();
+          if (i >= 2) times.push(performance.now() - start);
+        }
+        const encoder = device.createCommandEncoder();
+        encoder.copyBufferToBuffer(buffers[1],0,staging,0,count*16);
+        device.queue.submit([encoder.finish()]);
+        await staging.mapAsync(GPUMapMode.READ);
+        outputs.push(new Float32Array(staging.getMappedRange().slice(0)));
+        staging.unmap();
+        times.sort((a,b)=>a-b);
+        results.push({precision:model.precision, medianMs:times[2], shaderF16:device.features.has('shader-f16')});
+        log.textContent = JSON.stringify(results, null, 2);
+      } finally {
+        await device.queue.onSubmittedWorkDone();
+        buffers.forEach(buffer=>buffer.destroy()); staging.destroy(); await session.release();
+      }
+    }
+    let max = 0, squared = 0;
+    for (let i=0; i<outputs[0].length; i++) {
+      if (!Number.isFinite(outputs[0][i]) || !Number.isFinite(outputs[1][i])) throw Error('Non-finite output');
+      const error = Math.abs(outputs[0][i]-outputs[1][i]);
+      max = Math.max(max, error); squared += error*error;
+    }
+    const rmse = Math.sqrt(squared/outputs[0].length);
+    log.textContent = JSON.stringify({results, maxAbsoluteError:max, rmse, psnrDb:20*Math.log10(1/rmse), note:'Synthetic input; not a visual quality assessment or full extension FPS.'}, null, 2);
+  } catch(error) { log.textContent += '\nFAIL: ' + error.message; }
+};
+</script>

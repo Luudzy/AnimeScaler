@@ -1,0 +1,26 @@
+# Preserve exact report bytes so evidence SHA-256 survives Windows checkouts.
+docs/stability-evidence-20261011/*.json -text
+# Keep the RDNA1 source bundles and their evidence hashes byte-exact.
+docs/rdna1-evidence-20261011/* -text
+# Preserve the Windows provenance and preflight evidence hashes.
+docs/rocm-windows-evidence-20261011/* -text
+# Preserve temporal pipeline verification logs and their evidence hashes.
+docs/pipeline-evidence-20261011/* -text
+# Keep the bounded Lite playback measurements byte-exact.
+docs/lite-probe-evidence-20261011/* -text
+# Native logs may end in blank lines; preserve the original captured bytes.
+docs/lite-probe-evidence-20261011/*.txt whitespace=-blank-at-eof,cr-at-eol
+# Preserve offline motion matching evidence, archived algorithms and CPU logs.
+docs/motion-evidence-20261011/* -text
+# Generated Windows JSON uses CRLF; captured Node failures include space-only lines.
+docs/motion-evidence-20261011/*.json whitespace=cr-at-eol
+docs/motion-evidence-20261011/*.txt whitespace=-blank-at-eol,cr-at-eol
+# Keep the score-cache replay evidence byte-exact, including raw test output.
+docs/motion-cache-evidence-20261011/* -text
+docs/motion-cache-evidence-20261011/*.txt whitespace=-blank-at-eol,cr-at-eol
+# Preserve policy replay inputs, numeric results and raw CPU verification logs.
+docs/temporal-replay-evidence-20261011/* -text
+docs/temporal-replay-evidence-20261011/*.txt whitespace=-blank-at-eol,cr-at-eol
+# Preserve source-player reproductions and raw CPU/software-browser verification.
+docs/player-evidence-20261011/* -text
+docs/player-evidence-20261011/*.txt whitespace=-blank-at-eol,cr-at-eol

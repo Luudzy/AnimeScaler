@@ -1,0 +1,46 @@
+<!doctype html><meta charset="utf-8"><title>FSR3 native browser validation</title>
+<link rel="icon" href="data:,">
+<canvas id="source" width="640" height="360"></canvas><canvas id="output"></canvas>
+<pre id="result">Running…</pre>
+<script type="module">
+import {NativeEngine} from '../src/engine/native-engine.js';
+import {normalizeSettings} from '../src/core/settings.js';
+const result=document.querySelector('#result'),source=document.querySelector('#source'),output=document.querySelector('#output');
+const context=source.getContext('2d');source.videoWidth=640;source.videoHeight=360;source.currentTime=0;
+const engine=new NativeEngine();
+try {
+  const connection=window.__fsr3Connection;
+  const settings=normalizeSettings({model:'fsr3-native',preset:'720p',fsrQuality:'native-aa',adaptive:false});
+  await engine.initialize({canvas:output,video:source,settings,connection});
+  const frames=[];
+  for(let index=0;index<6;index++) {
+    context.fillStyle='#607090';context.fillRect(0,0,640,360);
+    context.fillStyle=index<3?'#f0b040':'#204010';context.fillRect(80+index*4,50,100,140);
+    source.currentTime=index/24;
+    frames.push(await engine.processFrame(source));
+  }
+  const bitmap=await createImageBitmap(output);const read=new OffscreenCanvas(output.width,output.height);const c=read.getContext('2d');c.drawImage(bitmap,0,0);bitmap.close();
+  const pixels=c.getImageData(0,0,read.width,read.height).data;
+  let total=0;for(let i=0;i<pixels.length;i+=4)total+=pixels[i]+pixels[i+1]+pixels[i+2];
+  if(total===0)throw Error('Black native worker canvas');
+  if(frames.some(row=>row.backend!=='d3d12'||row.modelPrecision!=='native'||row.outputWidth!==1280))throw Error('Incorrect FSR3 stats');
+  const reconfigured=[];
+  for(const preset of ['1080p','1440p','4k']) {
+    source.width=1920;source.height=1080;source.videoWidth=1920;source.videoHeight=1080;
+    await engine.updateSettings(normalizeSettings({...settings,preset,fsrQuality:'performance'}),source);
+    for(let index=0;index<3;index++) {
+      context.fillStyle='#607090';context.fillRect(0,0,1920,1080);
+      context.fillStyle='#f0b040';context.fillRect(240+index*8,150,300,420);
+      source.currentTime=2+index/24;
+      reconfigured.push({preset,...await engine.processFrame(source)});
+    }
+    const frame=await createImageBitmap(output);const readback=new OffscreenCanvas(output.width,output.height);const rc=readback.getContext('2d');rc.drawImage(frame,0,0);frame.close();
+    const pixel=rc.getImageData(Math.floor(output.width/2),Math.floor(output.height/2),1,1).data;
+    if(pixel[0]+pixel[1]+pixel[2]===0)throw Error('Black reconfigured output: '+preset);
+  }
+  if(reconfigured.some(row=>row.reused||row.repeated||row.backend!=='d3d12'))throw Error('Invalid reconfigured backend');
+  if(reconfigured.at(-1).outputWidth!==3840||reconfigured.at(-1).outputHeight!==2160||reconfigured.at(-1).inputWidth!==1920)throw Error('Incorrect 1080p to 4K dimensions');
+  await engine.destroy();
+  result.textContent='PASS\n'+JSON.stringify({scope:'Native WebSocket + browser worker + OffscreenCanvas GPU output. Synthetic distinct frames, not live site playback. Three samples per larger size are a smoke test, not a full benchmark.',frames,reconfigured,rgbSum:total},null,2);
+}catch(error){await engine.destroy();result.textContent='FAIL: '+error.stack;}
+</script>

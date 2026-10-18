@@ -1,0 +1,18 @@
+{
+  "file": "2xHFA2kReal-CUGAN.pth",
+  "architecture": "RealCUGAN",
+  "scale": 2,
+  "label": "HFA2K Real-CUGAN",
+  "supportsHalf": true,
+  "fusedConvolutions": 0,
+  "parametersAfterFusion": 1284598,
+  "fusionMaxError": 0.0,
+  "onnxMaxErrors": [
+    7.718801498413086e-06,
+    7.987022399902344e-06,
+    1.0967254638671875e-05
+  ],
+  "sourceSha256": "c7e5c93e0159bd584b64ac9232e35e5a1a2adcd244439d9eb67f25c8a609790b",
+  "onnxSha256": "163f18dd76e7883770624d75e0e11cdbf08cc02c9f7df662ccdbb2b86b090a09",
+  "tensorRtHardwareValidated": false
+}

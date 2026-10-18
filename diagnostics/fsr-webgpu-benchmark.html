@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>AnimeScaler FSR WebGPU benchmark</title>
+<link rel="icon" href="data:,">
+<canvas id="output" width="1920" height="1080"></canvas>
+<pre id="result">Preparando…</pre>
+<script type="module">
+  import { FsrEngine } from '../src/engine/fsr-engine.js';
+
+  const result = document.querySelector('#result');
+  const options = new URLSearchParams(location.search);
+  const preset = options.get('preset') === '4k' ? '4k' : '1080p';
+  const model = options.get('model') === 'temporal' ? 'asr-anime-temporal' : (options.get('model') === 'asr' ? 'asr-anime-spatial' : 'fsr1-spatial');
+  const spatialDenoise = options.get('denoise') ?? 'balanced';
+  const fsrQuality = options.get('quality') ?? 'native-aa';
+  const source = document.createElement('canvas');
+  source.width = preset === '4k' ? 1920 : 1280;
+  source.height = preset === '4k' ? 1080 : 720;
+  const ctx = source.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, source.width, source.height);
+  gradient.addColorStop(0, '#10152e'); gradient.addColorStop(.5, '#a73896'); gradient.addColorStop(1, '#ffe06d');
+  ctx.fillStyle = gradient; ctx.fillRect(0, 0, source.width, source.height);
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+  for (let x = 0; x < source.width; x += 19) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + 280, source.height); ctx.stroke(); }
+
+  try {
+    const engine = new FsrEngine();
+    await engine.initialize({ canvas: document.querySelector('#output'), video: source, settings: { model, preset, spatialDenoise, fsrQuality } });
+    await engine.processFrame(source);
+    // Capture before yielding to browser presentation (swapchain is transient).
+    const probe = document.createElement('canvas');
+    probe.width = 32; probe.height = 32;
+    const probeCtx = probe.getContext('2d', { willReadFrequently: true });
+    probeCtx.drawImage(document.querySelector('#output'), 0, 0, 32, 32);
+    const rgba = probeCtx.getImageData(0, 0, 32, 32).data;
+    const rgb = rgba.filter((_, index) => index % 4 !== 3);
+    if (Math.max(...rgb) < 128 || Math.min(...rgb) > 100) throw new Error('Invalid GPU output: synthetic colour pattern was not rendered');
+    for (let i = 0; i < 20; i += 1) await engine.processFrame(source);
+    await engine.device.queue.onSubmittedWorkDone();
+    const frames = preset === '4k' ? 60 : 120;
+    const started = performance.now();
+    for (let i = 0; i < frames; i += 1) {
+      ctx.fillStyle = `rgb(${i % 256},${(i * 7) % 256},${(i * 13) % 256})`;
+      ctx.fillRect(0, 0, 16, 16);
+      await engine.processFrame(source);
+    }
+    await engine.device.queue.onSubmittedWorkDone();
+    const elapsed = performance.now() - started;
+    result.textContent = `PASS: ${model}, denoise ${spatialDenoise}, preset ${fsrQuality}, ${source.width}×${source.height} → entrada ${engine.currentSize.inputWidth}×${engine.currentSize.inputHeight} → ${engine.currentSize.outputWidth}×${engine.currentSize.outputHeight}, ${frames} frames sintéticos distintos, ${(elapsed / frames).toFixed(2)} ms/frame de throughput em lote. Pixel sanity PASS. Inclui atualização do marcador, submissão e drenagem da fila GPU; NÃO é FPS do player nem latência individual.`;
+    await engine.destroy();
+  } catch (error) {
+    result.textContent = `FAIL: ${error?.message ?? error}`;
+  }
+</script>

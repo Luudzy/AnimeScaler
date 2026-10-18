@@ -1,0 +1,9 @@
+{
+  "architecture": "AnimeJaNai24-v1",
+  "weightsSha256": "9d4315bd5e7412ba8034f28408be1014bbe82ab8364549f6c8793d9dde04ca5f",
+  "maxAbsoluteErrors": [
+    8.344650268554688e-07,
+    8.940696716308594e-07,
+    1.0132789611816406e-06
+  ]
+}

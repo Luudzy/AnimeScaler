@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><title>AnimeScaler · ROCm no navegador</title>
+<style>body{font:16px system-ui;background:#111;color:#eee;margin:30px}canvas{max-width:90vw;width:640px}button,select{padding:12px}pre{white-space:pre-wrap}</style>
+<h1>ROCm · caminho completo do navegador</h1>
+<p>Quadro sintético idêntico ao benchmark. Inclui worker, captura, transferência local, IA e desenho no canvas. Não mede decodificação nem captura de aba.</p>
+<select id="preset" aria-label="Resolução"><option value="720p">360p → 720p</option><option value="1080p">720p → 1080p</option></select>
+<select id="model" aria-label="Modelo"><option value="adore">Adore</option><option value="adore-lite">Adore Lite v2</option><option value="animejanai">AnimeJaNai</option></select>
+<button id="run">Medir 60 quadros</button><pre id="result">Pronto</pre><canvas id="output"></canvas>
+<label><input id="jpeg" type="checkbox">Transporte JPEG 98 (experimental)</label>
+<label><input id="rgb" type="checkbox">Transporte RGB sem perda</label>
+<button id="compare">Comparar RGB e RGBA</button><pre id="comparison"></pre>
+<script type="module" src="native.js"></script></html>

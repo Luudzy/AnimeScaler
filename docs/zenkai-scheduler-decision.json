@@ -1,0 +1,13 @@
+{
+  "CRecipe": "Skip+Frequency+Codec50+cosine",
+  "C5kAuthorizedByEvidence": true,
+  "screeningOnly": true,
+  "Stage2AuthorizedByEvidence": false,
+  "schedulerSwitch": "NOT SELECTED",
+  "schedulerComparisonSha256": "970a771dd2b02d71b13c12934c2a1885d06ffbf05dee15f132d5c0af4c9eb7e8",
+  "codecComparisonSha256": "b0a874feae2c01ca921c58e7a0c4c740e647cd9dd1cac219dc22cceacb38c7ea",
+  "sourceStateSha256": "26452615891e66684da16d360b3caa93094edb1e36a922a40fec2c01cdf319b6",
+  "releaseApproved": false,
+  "promoted": false,
+  "maxTotalSteps": 5000
+}

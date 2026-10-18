@@ -1,0 +1,10 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Teste do viewer ROCm</title>
+<style>body{background:#111;color:white;font:16px system-ui}canvas{width:640px;max-width:95vw}#capture{display:none}button{padding:10px}#metrics{white-space:pre-wrap}</style>
+<h1>Teste do viewer com vídeo sintético</h1><p>Usa o viewer real com captura de canvas; substitui somente as APIs de extensão indisponíveis nesta página.</p>
+<select id="model" aria-label="Modelo"><option value="adore">Adore</option><option value="adore-lite">Adore Lite experimental</option><option value="adore-lite-v3">Adore Lite V3 experimental</option></select>
+<label><input type="checkbox" id="fluid">Vídeo fluido</label>
+<button id="start">Iniciar vídeo de teste</button><button id="switch">Trocar para WebGPU</button>
+<main id="stage"><canvas id="output"></canvas><canvas id="original" hidden></canvas><video id="capture" muted autoplay playsinline></video>
+<section id="hud"><div id="model-brand">Modelo 2×</div><div id="status">Pronto</div><div id="metrics"></div></section><pre id="report"></pre>
+<nav id="controls"><button id="back">−10s</button><button id="play">Play/Pause</button><button id="forward">+10s</button><button id="fullscreen">Tela cheia</button><button id="compare" disabled>Comparar</button><button id="comparison-toggle" hidden>Mostrar original</button><button id="info">Info</button><button id="close">Fechar</button></nav></main>
+<script type="module" src="native-viewer.js"></script></html>

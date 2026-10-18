@@ -1,0 +1,60 @@
+{
+  "name": "animescaler-webgpu",
+  "version": "0.2.1",
+  "private": true,
+  "files": [
+    "README.md",
+    "THIRD_PARTY_NOTICES.md",
+    "licenses/FSR1-MIT.txt",
+    "licenses/ONNXRUNTIME-MIT.txt",
+    "manifest.json",
+    "background.js",
+    "content-bootstrap.js",
+    "native-inline.html",
+    "assets/logo.png",
+    "popup/",
+    "src/core/",
+    "src/content/",
+    "src/engine/",
+    "src/host/",
+    "viewer/",
+    "vendor/ort-runtime-manifest.json",
+    "vendor/ort.webgpu.bundle.min.mjs",
+    "vendor/ort-wasm-simd-threaded.asyncify.mjs",
+    "vendor/ort-wasm-simd-threaded.asyncify.wasm",
+    "vendor/ort-wasm-simd-threaded.jsep.mjs",
+    "vendor/ort-wasm-simd-threaded.jsep.wasm",
+    "vendor/ort-wasm-simd-threaded.jspi.mjs",
+    "vendor/ort-wasm-simd-threaded.jspi.wasm",
+    "vendor/ort-wasm-simd-threaded.mjs",
+    "vendor/ort-wasm-simd-threaded.wasm",
+    "models/ANIMEJANAI.md",
+    "models/README.md"
+  ],
+  "type": "module",
+  "description": "Anime upscaler with WebGPU neural models and shaders; experimental models are labeled, native backends need separate runtimes.",
+  "scripts": {
+    "build:content": "node scripts/build-content.mjs",
+    "prepack": "npm run build:content",
+    "diagnostics": "node scripts/serve-diagnostics.mjs",
+    "test": "node --test",
+    "test:cpu": "node scripts/run-js-cpu-tests.mjs",
+    "test:native:cpu": "node scripts/run-python-cpu-tests.mjs",
+    "setup:runtime": "node scripts/copy-ort.mjs && node scripts/verify-ort.mjs",
+    "setup:opencl": "node scripts/setup-opencl.mjs",
+    "verify:runtime": "node scripts/verify-ort.mjs",
+    "setup:preflight": "node scripts/setup-models.mjs --preflight-only",
+    "setup:models": "node scripts/setup-models.mjs && node scripts/prepare-animejanai.mjs && node scripts/prepare-adore-webgpu.mjs",
+    "setup:python": "node scripts/setup-model-prep.mjs",
+    "setup:animejanai": "node scripts/prepare-animejanai.mjs",
+    "setup:fp16": "npm run setup:animejanai && python scripts/convert-animejanai-fp16.py && npm run setup:adore-fp16",
+    "setup:adore-fp16": "node scripts/prepare-adore-webgpu.mjs",
+    "setup": "npm run setup:preflight && npm run setup:runtime && npm run setup:models && npm run test:cpu"
+  },
+  "dependencies": {
+    "onnxruntime-web": "1.29.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.1"
+  }
+}

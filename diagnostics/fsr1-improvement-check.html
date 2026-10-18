@@ -1,0 +1,65 @@
+<!doctype html><meta charset="utf-8"><link rel="icon" href="data:,"><title>FSR1 improvement verification</title>
+<pre id="result">Running</pre>
+<script type="module">
+import {FsrEngine as Before} from './fsr1-baseline-engine-20261010.js';
+import {FsrEngine as After} from '../src/engine/fsr-engine.js';
+const output=document.querySelector('#result');
+const canvas=(w,h)=>Object.assign(document.createElement('canvas'),{width:w,height:h});
+const source=canvas(1280,720),ctx=source.getContext('2d');
+const reader=canvas(1280,720),read=reader.getContext('2d',{willReadFrequently:true});
+const pairs=[];
+const create=async(Type,preset,denoise='off')=>{
+ const target=canvas(1,1),engine=new Type();
+ await engine.initialize({canvas:target,video:source,settings:{model:'fsr1-spatial',preset,fsrQuality:'native-aa',spatialDenoise:denoise}});
+ return {target,engine};
+};
+const load=async path=>{const img=new Image();img.src=path;await img.decode();return img;};
+const pixels=async pair=>{const stats=await pair.engine.processFrame(source);if(stats.timingScope!=='gpu-completed-frame')await pair.engine.device.queue.onSubmittedWorkDone();read.drawImage(pair.target,0,0);return read.getImageData(0,0,1280,720).data;};
+const percentile=(a,p)=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor((s.length-1)*p)];};
+try{
+ const before=await create(Before,'720p'),after=await create(After,'720p');pairs.push(before,after);
+ const quality=[];
+ for(const clip of ['clip-60s-360-to-720','clip-600s-360-to-720','clip-1200s-360-to-720']){
+  let oldMAE=0,newMAE=0,maxDifference=0,changed=0,oldTemporal=0,newTemporal=0,previous=null;
+  for(let frame=0;frame<48;frame++){
+   const image=await load(`/diagnostics/video-sequences/rezero-real-01/${clip}/hr/${String(frame).padStart(8,'0')}.png`);
+   ctx.drawImage(image,0,0);source.currentTime=frame/24;
+   const reference=ctx.getImageData(0,0,1280,720).data;
+   const old=await pixels(before),next=await pixels(after);
+   for(let i=0;i<old.length;i++){if(i%4===3)continue;oldMAE+=Math.abs(old[i]-reference[i]);newMAE+=Math.abs(next[i]-reference[i]);const d=Math.abs(old[i]-next[i]);maxDifference=Math.max(maxDifference,d);changed+=d!==0;
+    if(previous){const delta=reference[i]-previous.reference[i];oldTemporal+=Math.abs(old[i]-previous.old[i]-delta);newTemporal+=Math.abs(next[i]-previous.next[i]-delta);}
+   }
+   if(frame===16){
+    const label=document.createElement('p');label.textContent=clip+' — fonte / anterior / atual (crop 320×180, mesma escala)';document.body.append(label);
+    for(const data of [reference,old,next]){const full=canvas(1280,720);full.getContext('2d').putImageData(new ImageData(data,1280,720),0,0);const preview=canvas(320,180);preview.getContext('2d').drawImage(full,480,220,320,180,0,0,320,180);document.body.append(preview);}
+   }
+   previous={reference,old,next};
+  }
+  const samples=48*1280*720*3,temporalSamples=47*1280*720*3;quality.push({clip,frames:48,scope:'Native 720p, HR frames used as 1:1 source and reference; not 360p reconstruction quality',beforeMAE:oldMAE/samples/255,afterMAE:newMAE/samples/255,beforeTemporalMAE:oldTemporal/temporalSamples/255,afterTemporalMAE:newTemporal/temporalSamples/255,maxDifference8bit:maxDifference,changedChannelFraction:changed/samples});
+ }
+ // Genuine upscale must retain identical algorithms/pixels.
+ source.width=640;source.height=360;
+ await before.engine.updateSettings({model:'fsr1-spatial',preset:'720p',fsrQuality:'native-aa',spatialDenoise:'balanced'},source);
+ await after.engine.updateSettings({model:'fsr1-spatial',preset:'720p',fsrQuality:'native-aa',spatialDenoise:'balanced'},source);
+ ctx.fillStyle='#506090';ctx.fillRect(0,0,640,360);ctx.fillStyle='#ddd';ctx.fillRect(120,60,130,140);
+ const old=await pixels(before),next=await pixels(after);let upscaleMaxDifference=0;
+ for(let i=0;i<old.length;i++)upscaleMaxDifference=Math.max(upscaleMaxDifference,Math.abs(old[i]-next[i]));
+ if(upscaleMaxDifference!==0)throw Error('Changed upscale pixels');
+ for(const pair of pairs)await pair.engine.destroy();pairs.length=0;
+ const benchmarks=[];
+ for(const scenario of [{preset:'1080p',w:1920,h:1080},{preset:'4k',w:3840,h:2160},{preset:'4k',w:1920,h:1080}]){
+  source.width=scenario.w;source.height=scenario.h;
+  for(const [name,Type] of [['before',Before],['after',After]]){
+   const pair=await create(Type,scenario.preset);pairs.push(pair);const times=[];
+   for(let index=0;index<38;index++){
+    ctx.fillStyle='#607080';ctx.fillRect(0,0,source.width,source.height);ctx.fillStyle=`rgb(${100+index},150,60)`;ctx.fillRect(100+index*2,80,400,200);
+    const start=performance.now();const stats=await pair.engine.processFrame(source);if(stats.timingScope!=='gpu-completed-frame')await pair.engine.device.queue.onSubmittedWorkDone();const ms=performance.now()-start;
+    if(index>=8)times.push(ms);
+   }
+   benchmarks.push({name,source:[source.width,source.height],output:[pair.target.width,pair.target.height],warmup:8,distinctFrames:30,medianMs:percentile(times,.5),p95Ms:percentile(times,.95),meanMs:times.reduce((a,b)=>a+b,0)/times.length});
+   await pair.engine.destroy();pairs.pop();
+  }
+ }
+ output.textContent='PASS\n'+JSON.stringify({scope:'Completed-frame wall time includes submit and GPU queue drain; no decoding, capture or player FPS. No concurrent GPU work between measurements.',quality,upscaleMaxDifference,performance:benchmarks},null,2);
+}catch(error){for(const pair of pairs)await pair.engine.destroy();output.textContent='FAIL: '+error.stack;}
+</script>

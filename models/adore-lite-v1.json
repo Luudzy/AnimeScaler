@@ -1,0 +1,26 @@
+{
+  "experimental": true,
+  "architecture": "AdoreLite16-v1",
+  "steps": 600,
+  "trainImageSha256": [
+    "3a2fb3a9e5d175c8a5fbd35c2eb7d6b4d5fb0b3a8af56e9d01e1679dc2473715",
+    "4c3f16e560b5a59b84a6a8ab37352ba4f622e228ec045ea0bb30026f5487ea73",
+    "e535eade6eda0af830b74f77e590756e3fef740aa8e7e3f44d5cdbd62d969001"
+  ],
+  "holdoutImageSha256": "7fa81a7f59bc680b46f5b5b269b5e84c4da167d5eeefbcbbeef32c007b17fdaf",
+  "sourceCount": 4,
+  "trainingSeconds": 5.533113400000275,
+  "weightsSha256": "6520bc8baedd0c001c8febf165a31a0d510f4dc7a6005753370c77e6ebfecf1c",
+  "holdoutMeanAbsoluteError": 0.009806499816477299,
+  "bilinearMeanAbsoluteError": 0.01256774365901947,
+  "improvesOverBilinear": true,
+  "inputShape": [
+    1,
+    3,
+    344,
+    640
+  ],
+  "gpuMedianMs": 1.7099500000767875,
+  "gpuP95Ms": 1.8688950002797355,
+  "limitations": "Three screenshots from one anime; one held-out screenshot. Not evidence of general quality, temporal stability or 30 FPS end-to-end."
+}

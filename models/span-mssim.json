@@ -1,0 +1,18 @@
+{
+  "file": "4xmssim_span_pretrain.pth",
+  "architecture": "SPAN",
+  "scale": 4,
+  "label": "SPAN MS-SSIM",
+  "supportsHalf": true,
+  "fusedConvolutions": 20,
+  "parametersAfterFusion": 426288,
+  "fusionMaxError": 0.0,
+  "onnxMaxErrors": [
+    1.7881393432617188e-06,
+    1.6689300537109375e-06,
+    1.9073486328125e-06
+  ],
+  "sourceSha256": "234ac9facfdce987dab59ef6cd8129dd88903a16b6d34eeddd639b81f6695b18",
+  "onnxSha256": "d290c9af1684f9f00ce16d91a15741032750b3cdff77a360955b056e57ab9c8b",
+  "tensorRtHardwareValidated": false
+}

@@ -1,0 +1,11 @@
+<!doctype html><html><meta charset="utf-8"><style>body{margin:25px;background:black}#clip{width:300px;height:100px;overflow:hidden;transform:scale(.8);contain:paint}video{width:600px;height:300px;object-fit:cover;object-position:left top}</style><div id="clip"><video id="video" autoplay muted playsinline></video></div>
+<script type="module">
+import { ExclusiveSource } from '../src/content/exclusive-source.js';
+window.exclusive=new ExclusiveSource();
+const canvas=document.createElement('canvas');canvas.width=1280;canvas.height=720;
+const context=canvas.getContext('2d');context.fillStyle='#173b52';context.fillRect(0,0,1280,720);
+context.strokeStyle='#3fff9a';context.lineWidth=30;context.strokeRect(15,15,1250,690);
+context.font='bold 55px sans-serif';context.fillStyle='white';context.fillText('VIDEO INTEIRO',400,360);
+document.querySelector('video').srcObject=canvas.captureStream(1);
+setInterval(()=>{context.fillRect(60,60,10,10);},500);
+</script></html>

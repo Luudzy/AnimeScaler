@@ -1,0 +1,51 @@
+<!doctype html>
+<meta charset="utf-8"><link rel="icon" href="data:,">
+<title>ASR temporal noise, motion and cut regression</title>
+<pre id="result">Running…</pre>
+<script type="module">
+import {FsrEngine} from '../src/engine/fsr-engine.js';
+const source=Object.assign(document.createElement('canvas'),{width:64,height:64});
+const ctx=source.getContext('2d');
+const modes=[];
+const report={spatialMse:0,temporalMse:0,frames:0,maxCutDifference:0,motionOldLineMean:0};
+try {
+  for(const model of ['asr-anime-spatial','asr-anime-temporal']) {
+    const canvas=document.createElement('canvas'); const engine=new FsrEngine();
+    await engine.initialize({canvas,video:source,settings:{model,preset:'performance',spatialDenoise:'balanced'}});
+    modes.push({engine,canvas,capture:Object.assign(document.createElement('canvas'),{width:128,height:128})});
+  }
+  let seed=5921;
+  for(let frame=0;frame<24;frame++) {
+    const image=ctx.createImageData(64,64),base=frame>=20?210:128,line=frame>=12?43:31;
+    for(let y=0;y<64;y++) for(let x=0;x<64;x++) {
+      seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+      const value=x===line||x===line+1?8:base+((seed>>>24)%25)-12;
+      image.data.set([value,value,value,255],(y*64+x)*4);
+    }
+    ctx.putImageData(image,0,0);
+    const outputs=[];
+    for(const mode of modes) {
+      await mode.engine.processFrame(source);
+      const read=mode.capture.getContext('2d',{willReadFrequently:true});read.drawImage(mode.canvas,0,0);
+      outputs.push(read.getImageData(0,0,128,128).data);
+    }
+    if(frame>=4&&frame<12) {
+      for(let y=16;y<112;y++) for(let x=8;x<40;x++) {
+        report.spatialMse+=(outputs[0][(y*128+x)*4]-base)**2;
+        report.temporalMse+=(outputs[1][(y*128+x)*4]-base)**2;
+      }
+      report.frames++;
+    }
+    if(frame===12) {
+      for(let y=16;y<112;y++) report.motionOldLineMean+=outputs[1][(y*128+63)*4]/96;
+    }
+    if(frame===20) for(let y=16;y<112;y++) for(let x=8;x<40;x++) report.maxCutDifference=Math.max(report.maxCutDifference,Math.abs(outputs[0][(y*128+x)*4]-outputs[1][(y*128+x)*4]));
+  }
+  report.spatialMse/=report.frames*96*32;report.temporalMse/=report.frames*96*32;
+  if(report.temporalMse>report.spatialMse*.9) throw new Error('Temporal filter must improve static noise MSE by 10%');
+  if(report.motionOldLineMean<115) throw new Error('Temporal left a dark trail after motion');
+  if(report.maxCutDifference>1) throw new Error('Temporal leaked history after a scene cut');
+  document.querySelector('#result').textContent='PASS\n'+JSON.stringify(report,null,2);
+} catch(error) {document.querySelector('#result').textContent='FAIL: '+error.message+'\n'+JSON.stringify(report,null,2);}
+finally {for(const mode of modes) await mode.engine.destroy();}
+</script>

@@ -1,0 +1,49 @@
+{
+  "architecture": "AdoreLite16-v1",
+  "weightsSha256": "17ef41ceacd16f9e8a5e340f4d6c59f2c80b149e48312ed96201ec5d79207a1c",
+  "datasetSha256": "161f7c0969d9d4daebb96dff77e3152c1609350d0ee4917e6976e3774fb36c54",
+  "splits": {
+    "train": 199,
+    "validation": 29,
+    "test": 28
+  },
+  "steps": 18000,
+  "metrics": {
+    "validation": {
+      "candidate": {
+        "mae": 0.013540954999527833,
+        "edgeMae": 0.01654532001082081
+      },
+      "previous": {
+        "mae": 0.013857581086995197,
+        "edgeMae": 0.016899583896482565
+      },
+      "bilinear": {
+        "mae": 0.01966201434070485,
+        "edgeMae": 0.021045936533482745
+      }
+    },
+    "test": {
+      "candidate": {
+        "mae": 0.018012337046781925,
+        "edgeMae": 0.023138336098587127
+      },
+      "previous": {
+        "mae": 0.018534974221373495,
+        "edgeMae": 0.023741240320695006
+      },
+      "bilinear": {
+        "mae": 0.027369535479790232,
+        "edgeMae": 0.030389918736286096
+      }
+    }
+  },
+  "inferenceP50Ms": 1.5830000002097222,
+  "inferenceP95Ms": 1.820525000039197,
+  "qualityGatePassed": true,
+  "improvesOverBilinear": true,
+  "trainingSeconds": 184.57741159999932,
+  "evaluation": "Synthetic 2x original-image reference; no temporal video validation",
+  "parentWeightsSha256": "f039b0f883fdba2721c50317a520234b67edf0ba533290825041fc8363a305c7",
+  "cumulativeOriginalReferenceSteps": 31800
+}

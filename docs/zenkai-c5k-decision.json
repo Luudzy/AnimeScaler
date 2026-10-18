@@ -1,0 +1,63 @@
+{
+  "run": "zenkai-lite-v1-c-codec50-5k",
+  "comparisonSha256": "e74ce0dd469f7f95d84ecc3fddc37d626857450afc18281e27f2643765a886ae",
+  "advancementAgainstHistoricalV3": "FAIL",
+  "meaning": "Screening quality/temporal advancement criterion only; training/export/backend operations passed",
+  "qualityRelativePercentLowerIsBetter": {
+    "clean": {
+      "mae": 4.848137045785705,
+      "edgeMae": 2.644749821481307,
+      "laplacianMae": 2.338677223810981,
+      "lpipsSqueeze": -14.678780547003312
+    },
+    "heavy": {
+      "mae": 1.7335525471960045,
+      "edgeMae": 1.7903493261197667,
+      "laplacianMae": 1.1962248053581481,
+      "lpipsSqueeze": 3.9365622556765567
+    },
+    "codec-intra-h264": {
+      "mae": 0.39480517066459164,
+      "edgeMae": 1.1254913948018697,
+      "laplacianMae": 0.4665567021208794,
+      "lpipsSqueeze": 2.480810071464812
+    },
+    "codec-intra-h265": {
+      "mae": 0.8139701090790652,
+      "edgeMae": 1.7025340538089795,
+      "laplacianMae": 1.0395625546295806,
+      "lpipsSqueeze": 5.239426397356395
+    },
+    "codec-intra-av1": {
+      "mae": 0.7148585572898991,
+      "edgeMae": 1.9350422936962985,
+      "laplacianMae": 1.580181172262729,
+      "lpipsSqueeze": 0.27593404839210134
+    }
+  },
+  "videoRelativePercentLowerIsBetter": {
+    "clip-60s-360-to-720": {
+      "mae": 0.5189312524040313,
+      "referenceCompensatedTemporalMae": 6.888711678403481
+    },
+    "clip-600s-360-to-720": {
+      "mae": 2.14182497000186,
+      "referenceCompensatedTemporalMae": 2.9795424552022
+    },
+    "clip-1200s-360-to-720": {
+      "mae": -26.23967573252849,
+      "referenceCompensatedTemporalMae": -10.790783735495369
+    }
+  },
+  "allFiveDomainsMaeRegress": true,
+  "allFiveDomainsEdgeRegress": true,
+  "clipsWithBothVisualAndTemporalRegression": 2,
+  "coherentGainEstablished": false,
+  "Stage2Started": false,
+  "Stage2AuthorizedByEvidence": false,
+  "releaseApproved": false,
+  "promoted": false,
+  "finalHiddenOpened": false,
+  "nextControlledHypothesis": "Prepared V2 union as a dataset-only smoke versus original Skip+Frequency1k. Do not combine Codec50/group/crop/legacy/scheduler switches.",
+  "definitiveGeneralization": "NOT ESTABLISHED:single seed and three excerpts of one compressed source"
+}

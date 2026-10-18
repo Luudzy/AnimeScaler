@@ -1,0 +1,18 @@
+{
+  "file": "realesr-animevideov3.pth",
+  "architecture": "Compact",
+  "scale": 4,
+  "label": "RealESR AnimeVideo v3",
+  "supportsHalf": true,
+  "fusedConvolutions": 0,
+  "parametersAfterFusion": 621424,
+  "fusionMaxError": 0.0,
+  "onnxMaxErrors": [
+    4.231929779052734e-06,
+    3.4570693969726562e-06,
+    3.993511199951172e-06
+  ],
+  "sourceSha256": "b8a8376811077954d82ca3fcf476f1ac3da3e8a68a4f4d71363008000a18b75d",
+  "onnxSha256": "c94be5fda0dea2d67ff94137d2970b2ac363a28a61b315737eb1234afaa60840",
+  "tensorRtHardwareValidated": false
+}

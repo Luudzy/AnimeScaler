@@ -1,0 +1,127 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>AnimeScaler ASR real-video validation</title>
+<link rel="icon" href="data:,">
+<style>canvas{display:none}body{background:#101217;color:#e9edf5;font:14px system-ui;padding:20px}pre{white-space:pre-wrap}body.debug canvas{display:inline-block;width:300px;height:auto;margin:4px;vertical-align:top}</style>
+<pre id="result">Preparando validação de vídeo real…</pre>
+<script type="module">
+  import { FsrEngine } from '../src/engine/fsr-engine.js';
+
+  const result = document.querySelector('#result');
+  const options = new URLSearchParams(location.search);
+  const spatialDenoise = options.get('denoise') ?? 'off';
+  const fsrQuality = options.get('quality') ?? 'native-aa';
+  const degraded = options.get('degraded') === '1';
+  const debug = location.search.includes('debug=1');
+  if (debug) document.body.classList.add('debug');
+  const root = '/diagnostics/video-sequences/rezero-real-01';
+  const clips = ['clip-60s-360-to-720', 'clip-600s-360-to-720', 'clip-1200s-360-to-720'];
+  const indices = location.search.includes('all=1')
+    ? Array.from({ length: 48 }, (_, index) => index)
+    : [0, 24, 47];
+  const width = 1280, height = 720;
+  const input = Object.assign(document.createElement('canvas'), { width: 640, height: 360 });
+  const inputCtx = input.getContext('2d', { alpha: false, willReadFrequently: true });
+  const bilinear = Object.assign(document.createElement('canvas'), { width, height });
+  const bilinearCtx = bilinear.getContext('2d', { alpha: false, willReadFrequently: true });
+  bilinearCtx.imageSmoothingEnabled = true;
+  const referenceCanvas = Object.assign(document.createElement('canvas'), { width, height });
+  const referenceCtx = referenceCanvas.getContext('2d', { alpha: false, willReadFrequently: true });
+  document.body.append(input, bilinear, referenceCanvas);
+
+  const createEngine = async (model) => {
+    const canvas = Object.assign(document.createElement('canvas'), { width, height });
+    document.body.append(canvas);
+    const engine = new FsrEngine();
+    await engine.initialize({ canvas, video: input, settings: { model, preset: '720p', spatialDenoise, fsrQuality } });
+    return { engine, canvas, readback: Object.assign(document.createElement('canvas'), { width, height }) };
+  };
+  const load = async (url) => {
+    const image = new Image(); image.src = url; await image.decode(); return image;
+  };
+  const pixels = (canvas) => canvas.getContext('2d', { alpha: false, willReadFrequently: true }).getImageData(0, 0, width, height).data;
+  const metric = (output, reference, previous, previousReference) => {
+    let absolute = 0, squared = 0, temporal = 0;
+    const samples = width * height * 3;
+    for (let index = 0; index < output.length; index += 4) {
+      for (let channel = 0; channel < 3; channel += 1) {
+        const delta = output[index + channel] - reference[index + channel];
+        absolute += Math.abs(delta); squared += delta * delta;
+        if (previous) temporal += Math.abs((output[index + channel] - previous[index + channel]) - (reference[index + channel] - previousReference[index + channel]));
+      }
+    }
+    const mae = absolute / samples / 255;
+    const mse = squared / samples / (255 * 255);
+    return { mae, psnr: 10 * Math.log10(1 / Math.max(mse, 1e-12)), temporalMae: previous ? temporal / samples / 255 : null };
+  };
+  const mean = (rows, key) => {
+    const values = rows.map((row) => row[key]).filter((value) => value != null);
+    return values.reduce((total, value) => total + value, 0) / values.length;
+  };
+  const modes = [
+    { name: 'bilinear', canvas: bilinear },
+    { name: 'fsr1-spatial', model: 'fsr1-spatial' },
+    { name: 'asr-anime-spatial', model: 'asr-anime-spatial' },
+    ...(options.get('temporal') === '1' ? [{name:'asr-anime-temporal',model:'asr-anime-temporal'}] : []),
+  ];
+
+  try {
+    for (const mode of modes.filter((mode) => mode.model)) Object.assign(mode, await createEngine(mode.model));
+    const report = { scope: 'Frozen real-video pairs. GPU output read back only for offline quality diagnostics; not player throughput.', spatialDenoise, fsrQuality, fps:'24000/1001', degradation:degraded ? 'deterministic RGB noise ±12/255 + JPEG quality .45 (not H264/H265)' : 'frozen original LR', framesPerClip: indices.length, clips: [] };
+    for (const clip of clips) {
+      for(const mode of modes.filter(mode=>mode.engine)) await mode.engine.resetHistory();
+      const rows = Object.fromEntries(modes.map((mode) => [mode.name, []]));
+      const historyFrames=Object.fromEntries(modes.filter(mode=>mode.engine).map(mode=>[mode.name,0]));
+      const previous = {};
+      for (const index of indices) {
+        const name = String(index).padStart(8, '0') + '.png';
+        const [low, reference] = await Promise.all([load(`${root}/${clip}/lr/${name}`), load(`${root}/${clip}/hr/${name}`)]);
+        inputCtx.drawImage(low, 0, 0, input.width, input.height);
+        input.currentTime=index*1001/24000;
+        if (degraded) {
+          const data = inputCtx.getImageData(0,0,input.width,input.height);
+          let seed = 5921 + index + clips.indexOf(clip)*1000;
+          for(let pixel=0;pixel<data.data.length;pixel+=4) for(let channel=0;channel<3;channel++) {
+            seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+            data.data[pixel+channel]+=((seed>>>24)%25)-12;
+          }
+          inputCtx.putImageData(data,0,0);
+          const jpeg = await new Promise(resolve => input.toBlob(resolve,'image/jpeg',.45));
+          const bitmap = await createImageBitmap(jpeg);
+          inputCtx.drawImage(bitmap,0,0); bitmap.close();
+        }
+        bilinearCtx.drawImage(input, 0, 0, width, height);
+        referenceCtx.drawImage(reference, 0, 0, width, height);
+        const referencePixels = pixels(referenceCanvas);
+        const previousReference = previous.reference;
+        for (const mode of modes) {
+          let canvas = mode.canvas;
+          if (mode.engine) {
+            const stats=await mode.engine.processFrame(input);
+            if(stats.temporalHistoryAvailable) historyFrames[mode.name]++;
+            // Snapshot the current canvas before yielding to presentation, which
+            // may clear/discard the swapchain texture at the end of the task.
+            mode.readback.getContext('2d', { alpha: false, willReadFrequently: true }).drawImage(mode.canvas, 0, 0);
+            canvas = mode.readback;
+          }
+          const output = pixels(canvas);
+          if (mode.engine && !output.some((value, index) => index % 4 !== 3 && value > 0)
+              && referencePixels.some((value, index) => index % 4 !== 3 && value > 16)) {
+            throw new Error(`${mode.name}: black GPU output on a non-black reference frame`);
+          }
+          rows[mode.name].push(metric(output, referencePixels, previous[mode.name], previousReference));
+          previous[mode.name] = output;
+        }
+        previous.reference = referencePixels;
+      }
+      report.clips.push({ clip, historyFrames, metrics: Object.fromEntries(modes.map((mode) => [mode.name, {
+        mae: mean(rows[mode.name], 'mae'), psnr: mean(rows[mode.name], 'psnr'), temporalMae: mean(rows[mode.name], 'temporalMae'),
+      }])) });
+      result.textContent = `Processado ${clip} (${indices.length} quadros por modo)…`;
+    }
+    if (!debug) for (const mode of modes.filter((mode) => mode.engine)) await mode.engine.destroy();
+    result.textContent = `PASS\n${JSON.stringify(report, null, 2)}`;
+  } catch (error) {
+    result.textContent = `FAIL: ${error?.stack || error}`;
+  }
+</script>

@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "AnimeScaler",
+  "version": "0.2.1",
+  "icons": {
+    "16": "assets/logo.png",
+    "32": "assets/logo.png",
+    "48": "assets/logo.png",
+    "128": "assets/logo.png"
+  },
+  "description": "Upscale 2x de anime com redes neurais e shaders WebGPU. Modelos experimentais são identificados; backends nativos exigem runtime separado.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "webNavigation",
+    "tabCapture",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": {
+      "16": "assets/logo.png",
+      "32": "assets/logo.png"
+    },
+    "default_title": "AnimeScaler",
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content-bootstrap.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/core/*",
+        "src/content/*",
+        "src/engine/*",
+        "vendor/*",
+        "models/*"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "minimum_chrome_version": "116"
+}

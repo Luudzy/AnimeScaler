@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>AnimeScaler — comparar configurações</title>
+<style>body{font:16px system-ui;background:#0b0d12;color:#eee;max-width:1000px;margin:24px auto;padding:20px}button,select{padding:10px;margin:8px}iframe{width:480px;height:290px;border:0}pre{white-space:pre-wrap}a{color:#aabfff}</style>
+<h1>Comparar configurações da GPU</h1>
+<p>Testa FP32/FP16, NCHW/NHWC internos e grupos 8×8, 16×8, 16×16 do pré/pós-processamento. Não altera automaticamente a extensão.</p>
+<select id="model"><option value="animejanai">AnimeJaNai</option><option value="adore">Adore</option></select>
+<label><input id="quick" type="checkbox"> Comparação rápida (somente grupo 8×8)</label>
+<select id="preset"><option value="720p">360p → 720p</option><option value="1080p">720p → 1080p (modelo 2× + redução)</option></select>
+<label><input id="graph" type="checkbox"> Graph Capture experimental</label>
+<label><input id="profile" type="checkbox"> Medir operadores (pode afetar desempenho)</label>
+<button id="run">Comparar</button><button id="save" disabled>Exportar resultado</button>
+<p>Mantenha a aba visível. O teste usa uma imagem sintética, sem decodificação nem captura. A verificação numérica é amostral; não substitui comparação visual em cenas reais.</p>
+<div id="preview"></div><pre id="result">Aguardando.</pre>
+<script type="module" src="tuning.js"></script>
+</html>

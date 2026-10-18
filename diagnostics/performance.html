@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>AnimeScaler — teste de desempenho</title>
+<style>body{font:16px system-ui;background:#0b0d12;color:#eee;max-width:1000px;margin:30px auto;padding:20px}button{padding:12px}canvas{width:480px;max-width:100%}pre{white-space:pre-wrap}</style>
+<h1>Teste do pipeline completo</h1>
+<p><a href="tuning.html">Comparar layout, precisão e workgroups; medir operadores</a></p>
+<p>Compara FP16 e FP32 em três resoluções. Mede upload, preparação, IA, renderização e espera da GPU. Entrada sintética: não inclui decodificação de vídeo nem captura de aba.</p>
+<button id="run">Executar benchmark</button>
+<label><input type="checkbox" id="graph"> Experimento: grafo estático em 360p → 720p</label>
+<canvas id="output"></canvas>
+<pre id="result">Mantenha esta aba visível durante o teste. A meta de 30 FPS exige menos de 33,3 ms por frame, com margem para captura e interface.</pre>
+<script type="module">
+import * as ort from '../vendor/ort.webgpu.bundle.min.mjs';
+import { AdoreEngine } from '../src/engine/adore-engine.js';
+import { GpuPrePost } from '../src/engine/gpu-prepost.js';
+import { getModelCandidates } from '../src/engine/model-config.js';
+ort.env.wasm.numThreads = 1;
+ort.env.wasm.wasmPaths = new URL('../vendor/', location.href).href;
+const button = document.querySelector('#run'), log = document.querySelector('#result');
+const source = document.createElement('canvas');
+source.width = source.videoWidth = 1920;
+source.height = source.videoHeight = 1080;
+const ctx = source.getContext('2d');
+const gradient = ctx.createLinearGradient(0,0,1920,1080);
+gradient.addColorStop(0,'#194fcd'); gradient.addColorStop(.5,'#fde8c8'); gradient.addColorStop(1,'#842030');
+ctx.fillStyle = gradient; ctx.fillRect(0,0,1920,1080);
+ctx.strokeStyle = '#111'; ctx.lineWidth = 3;
+for(let i=0;i<30;i++){ctx.beginPath();ctx.arc(960,540,20+i*22,0,Math.PI*2);ctx.stroke();}
+button.onclick = async () => {
+  button.disabled = true;
+  const results = [];
+  const graphCapture = document.querySelector('#graph').checked;
+  try {
+    for (const model of getModelCandidates(path=>'../'+path,'animejanai')) {
+      const engine = new AdoreEngine();
+      try {
+        log.textContent = `Carregando ${model.precision}…`;
+        engine.ort = ort;
+        engine.model = model;
+        engine.session = await ort.InferenceSession.create(model.url,{executionProviders:['webgpu'],graphOptimizationLevel:'all',logSeverityLevel:3,
+          ...(graphCapture ? {enableGraphCapture:true,freeDimensionOverrides:{batch_size:1,height:360,width:640}} : {})});
+        engine.device = ort.env.webgpu.device;
+        if(model.precision === 'fp16' && !engine.device.features.has('shader-f16')) {
+          results.push({precision:'fp16',skipped:'shader-f16 indisponível'}); continue;
+        }
+        engine.inputName = engine.session.inputNames[0]; engine.outputName = engine.session.outputNames[0];
+        engine.gpu = new GpuPrePost({device:engine.device,canvas:document.querySelector('#output')});
+        for(const [preset,level] of (graphCapture ? [['720p',0]] : [['performance',0],['720p',0],['1080p',0]])) {
+          engine.settings = {preset};
+          await engine.reconfigure(source,level);
+          const samples = [];
+          for(let frame=0;frame<15;frame++) {
+            const stats = await engine.processFrame(source);
+            if(frame>=3) samples.push(stats.totalMs);
+          }
+          samples.sort((a,b)=>a-b);
+          const medianMs = (samples[5]+samples[6])/2, p95Ms = samples[11];
+          results.push({precision:model.precision,graphCapture,input:`${engine.currentSize.inputWidth}x${engine.currentSize.inputHeight}`,output:`${engine.currentSize.outputWidth}x${engine.currentSize.outputHeight}`,medianMs,p95Ms,estimatedPipelineFps:1000/medianMs,within30FpsBudget:p95Ms<33.333});
+          log.textContent = JSON.stringify(results,null,2);
+        }
+      } finally { await engine.destroy(); }
+    }
+    log.textContent = JSON.stringify({results,notes:'12 amostras após 3 aquecimentos; pipeline sintético completo. FPS estimado não é FPS medido de vídeo. Não comprova desempenho numa RX 580 sem executar nela.'},null,2);
+  } catch(error) { log.textContent = JSON.stringify({results,error:error.message},null,2); }
+  finally { button.disabled = false; }
+};
+</script>
+</html>
